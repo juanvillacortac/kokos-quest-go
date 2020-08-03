@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Koko's Quest</title>
+	<link rel="apple-touch-icon" sizes="180x180" href="/assets/metadata/apple-touch-icon.png">
+	<link rel="icon" type="image/png" sizes="32x32" href="/assets/metadata/favicon-32x32.png">
+	<link rel="icon" type="image/png" sizes="16x16" href="/assets/metadata/favicon-16x16.png">
+	<link rel="manifest" href="/assets/metadata/manifest.json">
+	<link rel="stylesheet" href="/assets/css/style.css">
+	<script>
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', function () {
+				navigator.serviceWorker
+					.register('/sw.js')
+					.catch(function(err) {
+						console.info('Service workers are not supported.');
+					})
+			})
+		}
+		window.addEventListener('beforeinstallprompt', function (e) {
+			e.preventDefault()
+			e.prompt()
+		})
+	</script>
+</head>
+<body>
+	<script src="https://unpkg.com/pako@1.0.11/dist/pako.min.js"></script>
+	<script src="/assets/js/wasm_exec.js"></script>
+	<script src="/assets/js/kokos_quest.js"></script>
+	<div id="loading">
+		<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+	</div>
+</body>
+</html>
