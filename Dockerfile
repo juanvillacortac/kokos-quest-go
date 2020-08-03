@@ -23,4 +23,4 @@ EXPOSE 8080
 
 # Command to run the executable
 RUN make gen
-RUN make serve
+CMD make serve
