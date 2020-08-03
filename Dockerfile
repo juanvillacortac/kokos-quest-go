@@ -1,6 +1,10 @@
 FROM golang:alpine
 
-RUN apk update && apk add --no-cache gcc && apk add --no-cache libc-dev && apk add --no-cache make && apk add --no-cache gzip
+RUN apk update
+RUN apk add --no-cache gcc
+RUN apk add --no-cache libc-dev
+RUN apk add --no-cache make
+RUN apk add --no-cache gzip
 
 # Set the current working Directory inside the container
 WORKDIR /app
@@ -18,5 +22,5 @@ COPY . .
 EXPOSE 8080
 
 # Command to run the executable
-CMD ["make", "gen"]
-CMD ["make", "serve"]
+RUN make gen
+RUN make serve
