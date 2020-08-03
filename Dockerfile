@@ -18,9 +18,6 @@ RUN go mod download
 # Copy the source from the current directory to the WORKDIR inisde the container
 COPY . .
 
-# Exporse port 3000 or 8000 to the outisde world
-EXPOSE 8080:80
-
 # Command to run the executable
 RUN make gen
-CMD make serve
+CMD make PORT=$PORT serve
