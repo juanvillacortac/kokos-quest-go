@@ -19,7 +19,7 @@ RUN go mod download
 COPY . .
 
 # Exporse port 3000 or 8000 to the outisde world
-EXPOSE 8080
+EXPOSE 8080:80
 
 # Command to run the executable
 RUN make gen
