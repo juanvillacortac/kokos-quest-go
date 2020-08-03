@@ -20,8 +20,6 @@ endif
 OUTPUT=$(OUTPUT_DIR)/$(PROJECT)$(EXE)
 WASM_OUTPUT=$(WASM_DIR)/assets/wasm/$(PROJECT).wasm
 
-PORT=8080
-
 .PHONY: % run editor build fmt clean generate serve wasm
 
 %:
@@ -70,7 +68,7 @@ wasm:
 	@echo "Done!"
 
 wasm-server:
-	@$(GC) run $(WASM_SERVER_PKG) -gzip -port $(PORT) -path $(WASM_DIR)
+	@$(GC) run $(WASM_SERVER_PKG) -gzip -path $(WASM_DIR)
 
 serve: wasm wasm-server
 

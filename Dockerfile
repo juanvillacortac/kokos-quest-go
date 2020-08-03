@@ -20,4 +20,4 @@ COPY . .
 
 # Command to run the executable
 RUN make gen
-CMD make PORT=$PORT serve
+CMD make serve
