@@ -2,10 +2,11 @@ const ASSETS = [
   '/index.html',
   '/',
 
-  'https://unpkg.com/pako@1.0.11/dist/pako.min.js',
+  '/assets/css/style.css',
 
   '/assets/wasm/kokos_quest.wasm.gz',
-  '/assets/css/style.css',
+
+  '/assets/js/pako@1.0.11.min.js',
   '/assets/js/kokos_quest.js',
   '/assets/js/wasm_exec.js',
 
@@ -18,10 +19,10 @@ const ASSETS = [
   '/assets/metadata/favicon.ico',
 ]
 
-const CACHE_NAME = 'kokos_quest-v2'
+const CACHE_NAME = 'kokos_quest-v1'
 
 self.addEventListener('install', event => {
-  console.info('[Service Worker] Installing...');
+  console.info('[Service Worker] Installing...')
   event.waitUntil(precache())
 })
 
@@ -55,17 +56,19 @@ self.addEventListener('fetch', event => {
   event.waitUntil(update(event.request))
 })
 
-function fromCache(request) {
-  return caches.match(request).then(function(response) {
-    return response || fetch(request)
-  }).catch(function (error) {
-    console.info('[Service Worker] Error fetching', request.url, error)
+async function fromCache(request) {
+  return caches.open(CACHE_NAME).then(async cache => {
+    return cache.match(request).then(response => {
+      return response || fetch(request)
+    }).catch(function (error) {
+      console.info('[Service Worker] Error fetching', request.url, error)
+    })
   })
 }
 
-function update(request) {
-  return caches.open(CACHE_NAME).then(function (cache) {
-    return fetch(request).then(function (response) {
+async function update(request) {
+  return caches.open(CACHE_NAME).then(async cache => {
+    return fetch(request).then(response => {
       console.info("[Service Worker] Updating cache...", request.url)
       return cache.put(request, response)
     })

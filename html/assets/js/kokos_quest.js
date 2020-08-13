@@ -1,5 +1,62 @@
 let canvas
 
+const WASM_URL = '/assets/wasm/kokos_quest.wasm'
+const GZIP = true
+
+window.addEventListener('DOMContentLoaded', async () => {
+  const go = new Go()
+  const pako = window.pako
+
+  const status = document.getElementById('status')
+
+  status.innerText = 'Fetching'
+  const resp = await fetch(GZIP ? WASM_URL + '.gz' : WASM_URL)
+  if (!resp.ok) {
+    error(await resp.text())
+    return
+  }
+  const buffer = await resp.arrayBuffer()
+
+  let wasm
+  if (GZIP) {
+    status.innerText = 'Decoding'
+    wasm = pako.ungzip(buffer);
+    // A fetched response might be decompressed twice on Firefox.
+    // See https://bugzilla.mozilla.org/show_bug.cgi?id=610679
+    if (wasm[0] === 0x1f && wasm[1] === 0x8b) {
+      wasm = pako.ungzip(wasm)
+    }
+  } else {
+    wasm = buffer
+  }
+
+  WebAssembly.instantiate(wasm, go.importObject)
+    .then(result => {
+      document.getElementById('loading').remove()
+      status.remove()
+
+      go.run(result.instance)
+
+      canvas = document.getElementsByTagName('canvas')[0]
+
+      SetScreenSize(
+        document.__Game__ScreenSize.width,
+        document.__Game__ScreenSize.height
+      )
+    })
+    .catch(err => {
+      error(err)
+    })
+})
+
+function error(err) {
+  const pre = document.createElement('pre');
+  pre.innerText = err
+  document.body.appendChild(pre)
+  document.getElementById('loading').innerText = 'Error'
+  console.error(err)
+}
+
 function IsFullscreen() {
   return (document.fullscreenElement && document.fullscreenElement !== null) ||
     (document.webkitFullscreenElement && document.webkitFullscreenElement !== null) ||
@@ -21,8 +78,8 @@ function SetFullscreen(fullscreen){
         return canvas.mozRequestFullScreen()
     } else if(canvas.msRequestFullscreen) {
         return canvas.msRequestFullscreen()
-    } else {
         alert("This browser doesn't supporter fullscreen")
+      alert("This browser doesn't supporter fullscreen")
     }
   }
 
@@ -70,42 +127,3 @@ function SetScreenSize(width, height) {
     }
   }
 }
-
-function error(err) {
-  const pre = document.createElement('pre');
-  pre.innerText = err
-  document.body.appendChild(pre)
-  document.getElementById('loading').innerText = 'Error'
-  console.error(err)
-}
-
-window.addEventListener('DOMContentLoaded', async () => {
-  const go = new Go();
-  const url = '/assets/wasm/kokos_quest.wasm.gz' // the gzip-compressed wasm file
-  const pako = window.pako;
-
-  const resp = await fetch(url)
-  if (!resp.ok) {
-    error(await resp.text())
-    return
-  }
-
-  let wasm = pako.ungzip(await resp.arrayBuffer());
-  // A fetched response might be decompressed twice on Firefox.
-  // See https://bugzilla.mozilla.org/show_bug.cgi?id=610679
-  if (wasm[0] === 0x1f && wasm[1] === 0x8b) {
-    wasm = pako.ungzip(wasm)
-  }
-
-  WebAssembly.instantiate(wasm, go.importObject)
-    .then(result => {
-      document.getElementById('loading').remove() // a loading text before the wasm loads
-      go.run(result.instance)
-      const sizes = document.__Game__ScreenSize
-      canvas = document.getElementsByTagName('canvas')[0]
-      SetScreenSize(sizes.width, sizes.height)
-    })
-    .catch(err => {
-      error(err)
-    })
-})

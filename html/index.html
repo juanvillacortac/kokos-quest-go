@@ -14,18 +14,28 @@
 				navigator.serviceWorker
 					.register('/sw.js')
 					.catch(function(err) {
-						console.info('Service workers are not supported.');
+						console.info('Service workers are not supported.')
 					})
 			})
 		}
 	</script>
 </head>
 <body>
-	<script src="https://unpkg.com/pako@1.0.11/dist/pako.min.js"></script>
+	<script src="/assets/js/pako@1.0.11.min.js"></script>
 	<script src="/assets/js/wasm_exec.js"></script>
 	<script src="/assets/js/kokos_quest.js"></script>
 	<div id="loading">
-		<div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+		<div class="lds-roller">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
 	</div>
+	<p id="status"></p>
 </body>
 </html>
