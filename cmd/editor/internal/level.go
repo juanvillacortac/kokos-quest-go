@@ -2,8 +2,6 @@ package editor
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
 
 	"kokos_quest/pkg/audio"
 	"kokos_quest/pkg/levels"
@@ -19,17 +17,24 @@ import (
 // Doja Cat - Say so
 // L.A Espinetta - Ya no mires atras
 
-func loadLevel(path string) (levels.LevelFile, error) {
+type LoadLevelFunc func() ([]byte, error)
+type SaveLevelFunc func([]byte) error
+
+type SaveStatus int
+
+const (
+	UNSAVED SaveStatus = iota
+	SAVING
+	SAVED
+)
+
+func loadLevel(handler LoadLevelFunc) (levels.LevelFile, error) {
 	l := levels.LevelFile{
 		Grid:      make(map[units.Vec]tiles.TileBuilder, 0),
 		PlayerPos: units.Vec{X: -1, Y: -1},
 	}
 
-	_, err := os.Stat(path)
-	if os.IsNotExist(err) {
-		return l, nil
-	}
-	buff, err := ioutil.ReadFile(path)
+	buff, err := handler()
 	if err != nil {
 		return l, fmt.Errorf("[ERROR] %s", err)
 	}
@@ -39,8 +44,8 @@ func loadLevel(path string) (levels.LevelFile, error) {
 	return l, nil
 }
 
-func (s *EditorScene) saveLevel(path string) {
-	if s.saved {
+func (s *EditorScene) saveLevel() {
+	if s.status == SAVED {
 		return
 	}
 	if s.playerPos == nil {
@@ -56,11 +61,14 @@ func (s *EditorScene) saveLevel(path string) {
 		fmt.Println("[ERROR]", err)
 		return
 	}
-	if err := ioutil.WriteFile(path, buff, 0644); err != nil {
+
+	s.status = SAVING
+
+	if err := s.SaveLevelHandler(buff); err != nil {
 		fmt.Println("[ERROR]", err)
 		return
 	}
 
 	audio.PlaySE("Jump")
-	s.saved = true
+	s.status = SAVED
 }

@@ -41,7 +41,6 @@ func NewGame(title string, width, height, scale int, debuggable bool) (*Game, er
 
 	ebiten.SetWindowSize(global.ScreenWidth, global.ScreenHeight)
 	ebiten.SetWindowTitle(title)
-	ebiten.SetVsyncEnabled(true)
 
 	global.Debug = debuggable
 

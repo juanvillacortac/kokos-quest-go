@@ -18,6 +18,7 @@ func main() {
 		Gzip:     *gz,
 		HtmlPath: *path,
 	}
+	PrepareServer(&s)
 
 	if *port == "" {
 		*port = os.Getenv("PORT")

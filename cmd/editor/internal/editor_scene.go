@@ -15,8 +15,7 @@ import (
 )
 
 var (
-	keys       = draw.Keys()
-	OutputPath string
+	keys = draw.Keys()
 )
 
 type EditorScene struct {
@@ -31,11 +30,13 @@ type EditorScene struct {
 	playerPos    *units.Vec
 
 	showInfo bool
-	saved    bool
+	status   SaveStatus
+
+	SaveLevelHandler SaveLevelFunc
 }
 
-func NewEditorScene() *EditorScene {
-	level, err := loadLevel(OutputPath)
+func NewEditorScene(loadHandler LoadLevelFunc, saveHandler SaveLevelFunc) *EditorScene {
+	level, err := loadLevel(loadHandler)
 	if err != nil {
 		panic(err)
 	}
@@ -55,6 +56,8 @@ func NewEditorScene() *EditorScene {
 		grid:      level.Grid,
 
 		showInfo: true,
+
+		SaveLevelHandler: saveHandler,
 	}
 }
 
@@ -125,9 +128,12 @@ FPS: %.2f
 		rotationStr, mirroredX, mirroredY, ebiten.CurrentFPS(),
 	)
 
-	if !s.saved {
+	switch s.status {
+	case UNSAVED:
 		info += "+"
-	} else {
+	case SAVING:
+		info += "Saving..."
+	case SAVED:
 		info += "Saved!"
 	}
 

@@ -11,25 +11,25 @@ import (
 
 func (s *EditorScene) clearGrid() {
 	s.grid = make(map[units.Vec]tiles.TileBuilder)
-	s.saved = false
+	s.status = UNSAVED
 }
 
 func (s *EditorScene) placeTile() {
 	if s.tileInCursor != nil {
 		s.grid[s.cursorPos] = *s.tileInCursor
 	}
-	s.saved = false
+	s.status = UNSAVED
 }
 
 func (s *EditorScene) removeTile() {
 	delete(s.grid, s.cursorPos)
-	s.saved = false
+	s.status = UNSAVED
 }
 
 func (s *EditorScene) setPlayerPos() {
 	if s.grid[s.cursorPos].Key == "" {
 		s.playerPos = &units.Vec{X: s.cursorPos.X, Y: s.cursorPos.Y}
-		s.saved = false
+		s.status = UNSAVED
 	}
 }
 

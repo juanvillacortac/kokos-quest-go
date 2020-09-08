@@ -68,7 +68,7 @@ func (s *EditorScene) Input() {
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyControl) && inpututil.IsKeyJustPressed(ebiten.KeyS) {
-		s.saveLevel(OutputPath)
+		go s.saveLevel()
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyP) {
