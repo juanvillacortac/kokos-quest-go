@@ -17,6 +17,7 @@ ifdef COMSPEC
 	EXE := .exe
 endif
 
+GLOBAL_ARGS=
 OUTPUT=$(OUTPUT_DIR)/$(PROJECT)$(EXE)
 WASM_OUTPUT=$(WASM_DIR)/assets/wasm/$(PROJECT).wasm
 
@@ -37,7 +38,7 @@ run:
 
 build:
 	@echo "Compiling to $(OUTPUT)"
-	@$(GC) build -o $(OUTPUT) $(MAIN_PKG)
+	@$(GC) build $(GLOBAL_ARGS) -o $(OUTPUT) $(MAIN_PKG)
 	@echo "Done!"
 
 fmt:
@@ -48,7 +49,7 @@ clean:
 
 gen:
 	@echo "Generating all..."
-	@$(GC) generate ./...
+	@$(GC) generate -v ./...
 	@echo "Done!"
 
 wasm:
@@ -56,7 +57,7 @@ wasm:
 	@mkdir $(WASM_DIR) -p
 	@cp -r html/* $(OUTPUT_DIR)/html
 	@echo "Compiling to $(WASM_OUTPUT)"
-	@GOOS=js GOARCH=wasm $(GC) build -ldflags "-s -w" -o $(WASM_OUTPUT) $(MAIN_PKG)
+	@GOOS=js GOARCH=wasm $(GC) build $(GLOBAL_ARGS) -ldflags "-s -w" -o $(WASM_OUTPUT) $(MAIN_PKG)
 	@echo "Gziping..."
 	@gzip -9 -v -c $(WASM_OUTPUT) > $(WASM_OUTPUT).gz
 #	@echo "Optimizing..."

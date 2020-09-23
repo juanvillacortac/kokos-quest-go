@@ -41,6 +41,11 @@ func Image(key string) []byte {
 	return MustAsset(fmt.Sprintf("sprites/%s.png", key))
 }
 
+// Return a shader in a slice of bytes
+func Shader(key string) []byte {
+	return MustAsset(fmt.Sprintf("shaers/%s.kage", key))
+}
+
 // Return a level string
 func Level(key string) []byte {
 	return MustAsset(fmt.Sprintf("levels/%s", key))

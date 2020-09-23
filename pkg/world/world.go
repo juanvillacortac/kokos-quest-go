@@ -54,7 +54,7 @@ func (w *World) Draw(screen *ebiten.Image) {
 	w.player.Draw(screen)
 	w.drawTiles(screen)
 
-	if global.Debug {
+	if global.Config.Debug {
 		w.drawDebug(screen)
 	}
 }

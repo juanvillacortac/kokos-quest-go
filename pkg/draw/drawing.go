@@ -2,6 +2,7 @@ package draw
 
 import (
 	"image/color"
+	"kokos_quest/pkg/global"
 
 	"github.com/SolarLune/resolv/resolv"
 	"github.com/hajimehoshi/ebiten"
@@ -50,7 +51,7 @@ func DrawWithShadow(screen *ebiten.Image, image *ebiten.Image, px, py int, op *e
 
 // Draw a cross cursor in the mouse coordinates
 func DrawCursor(screen *ebiten.Image) {
-	x, y := ebiten.CursorPosition()
+	x, y := global.CursorPosition().X, global.CursorPosition().Y
 
 	// Get color in current pixel
 	r, g, b, _ := screen.At(x, y).RGBA()

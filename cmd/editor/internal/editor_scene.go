@@ -7,6 +7,7 @@ import (
 	"kokos_quest/pkg/constants"
 	"kokos_quest/pkg/draw"
 	"kokos_quest/pkg/game"
+	"kokos_quest/pkg/global"
 	"kokos_quest/pkg/tiles"
 	"kokos_quest/pkg/units"
 
@@ -79,7 +80,7 @@ func (s *EditorScene) Update(g *game.Game) {
 	s.Input()
 
 	ts := constants.TileSize
-	x, y := ebiten.CursorPosition()
+	x, y := global.CursorPosition().X, global.CursorPosition().Y
 	x, y = x/ts, y/ts
 	if (x >= 0 && x < constants.TilesPerWidth) && (y >= 0 && y < constants.TilesPerHeight) {
 		s.cursorPos = units.Vec{X: x, Y: y}
@@ -116,7 +117,7 @@ func (s *EditorScene) PrintInfo(screen *ebiten.Image) {
 		`Cursor position: %s
 
 Key: %s
-	Source position: %s
+Source position: %s
           - Max: %s
 Rotation: %s
 Mirrored: {X: %v, Y: %v}
