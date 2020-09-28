@@ -31,7 +31,7 @@ func (s *TitleScene) Init() {
 	s.initializedScene = true
 }
 
-func (s *TitleScene) Update(g *Game) {
+func (s *TitleScene) Update(g *Game, _ float64) {
 	if inpututil.IsKeyJustPressed(ebiten.KeyZ) {
 		audio.PlaySE("Swing")
 		g.SetScene(NewGameScene())

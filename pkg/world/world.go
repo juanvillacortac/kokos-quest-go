@@ -3,7 +3,6 @@ package world
 import (
 	"image/color"
 
-	"kokos_quest/pkg/constants"
 	"kokos_quest/pkg/draw"
 	"kokos_quest/pkg/global"
 	"kokos_quest/pkg/player"
@@ -32,7 +31,7 @@ func initSpace(playerPos units.Vec, grid map[units.Vec]tiles.Tile) *resolv.Space
 		pos = pos.ToAbsolute()
 		rect := resolv.NewRectangle(
 			int32(pos.X), int32(pos.Y),
-			constants.TileSize, constants.TileSize,
+			units.TileSize, units.TileSize,
 		)
 		rect.SetData(tile)
 		rect.AddTags("tile")
@@ -44,8 +43,8 @@ func initSpace(playerPos units.Vec, grid map[units.Vec]tiles.Tile) *resolv.Space
 
 var isColliding bool
 
-func (w *World) Update() {
-	w.player.Update(w.space)
+func (w *World) Update(dt float64) {
+	w.player.Update(w.space, dt)
 
 	isColliding = w.space.WouldBeColliding(w.player.Rect(), 0, 0)
 }

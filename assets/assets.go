@@ -8,7 +8,7 @@ import (
 	"github.com/thoas/go-funk"
 )
 
-//go:generate go run github.com/kevinburke/go-bindata/go-bindata -nocompress -pkg=assets sprites sounds music levels
+//go:generate go run github.com/kevinburke/go-bindata/go-bindata -nocompress -pkg=assets sprites sounds music levels shaders
 //go:generate gofmt -s -w .
 
 // Load file keys given in a directory
@@ -43,7 +43,7 @@ func Image(key string) []byte {
 
 // Return a shader in a slice of bytes
 func Shader(key string) []byte {
-	return MustAsset(fmt.Sprintf("shaers/%s.kage", key))
+	return MustAsset(fmt.Sprintf("shaders/_%s.go", key))
 }
 
 // Return a level string

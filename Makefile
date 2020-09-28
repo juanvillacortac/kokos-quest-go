@@ -49,7 +49,7 @@ clean:
 
 gen:
 	@echo "Generating all..."
-	@$(GC) generate -v ./...
+	@$(GC) generate ./...
 	@echo "Done!"
 
 wasm:

@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 
+	"kokos_quest/assets"
 	"kokos_quest/pkg/audio"
 	"kokos_quest/pkg/draw"
 	"kokos_quest/pkg/global"
@@ -16,29 +17,11 @@ import (
 	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
-var shader = []byte(`
-package main
-
-var Time float
-var Cursor vec2
-var ScreenSize vec2
-
-func Fragment(position vec4, texCoord vec2, color vec4) vec4 {
-	center := ScreenSize / 2
-	amount := (center - Cursor) / 10 / ScreenSize
-	var clr vec4
-	clr.r = imageSrc0At(texCoord + amount).r
-	clr.g = imageSrc0UnsafeAt(texCoord).g
-	clr.b = imageSrc0At(texCoord - amount).b
-	return clr
-}
-`)
-
 type Scene interface {
 	InitializedOnce() bool
 
 	Init()
-	Update(g *Game)
+	Update(g *Game, dt float64)
 	Draw(screen *ebiten.Image)
 }
 
@@ -52,6 +35,9 @@ type Game struct {
 
 	scene  Scene
 	shader *ebiten.Shader
+
+	framebuffer       *ebiten.Image
+	shaderFramebuffer *ebiten.Image
 
 	time int
 
@@ -103,7 +89,7 @@ func (g *Game) InitResources() error {
 				return
 			}
 		}()
-		s, shaderErr := ebiten.NewShader(shader)
+		s, shaderErr := ebiten.NewShader(assets.Shader("aberration"))
 		if shaderErr != nil {
 			err = shaderErr
 		}
@@ -155,11 +141,15 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		}
 	}
 
+	elapsed := g.time
+
 	g.time++
 
 	g.initScene()
 
-	g.scene.Update(g)
+	dt := float64(g.time-elapsed) / 60
+
+	g.scene.Update(g, dt)
 
 	switch {
 	case inpututil.IsKeyJustReleased(ebiten.KeyF):
@@ -170,8 +160,6 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		}
 	case inpututil.IsKeyJustPressed(ebiten.KeyS):
 		global.Config.Shader = !global.Config.Shader
-	case inpututil.IsKeyJustPressed(ebiten.KeyH):
-		global.Config.HighDpi = !global.Config.HighDpi
 	case inpututil.IsKeyJustPressed(ebiten.KeyEscape):
 		os.Exit(0)
 	}
@@ -193,6 +181,9 @@ func getScaleFactor(screen, rect []int) float64 {
 	return scaleFactor
 }
 
+func init() {
+}
+
 func (g *Game) Draw(screen *ebiten.Image) {
 	if g.resourceLoadedCh != nil {
 		ebitenutil.DebugPrint(screen, "Loading resources...")
@@ -212,9 +203,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		H: g.height,
 	}
 
-	framebuffer, _ := ebiten.NewImage(g.width, g.height, ebiten.FilterDefault)
+	if g.framebuffer == nil {
+		g.framebuffer, _ = ebiten.NewImage(g.width, g.height, ebiten.FilterDefault)
+	}
+	if g.shaderFramebuffer == nil {
+		g.shaderFramebuffer, _ = ebiten.NewImage(g.width, g.height, ebiten.FilterDefault)
+	}
 
-	g.scene.Draw(framebuffer)
+	g.scene.Draw(g.framebuffer)
 
 	op := &ebiten.DrawImageOptions{}
 
@@ -237,11 +233,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	if global.Config.Debug {
-		ebitenutil.DebugPrint(framebuffer, fmt.Sprintf("FPS: %.2f", ebiten.CurrentFPS()))
+		ebitenutil.DebugPrint(g.framebuffer, fmt.Sprintf("FPS: %.2f", ebiten.CurrentFPS()))
 	}
 
 	if global.Config.Shader {
-		opShaded := &ebiten.DrawRectShaderOptions{GeoM: op.GeoM}
+		opShaded := &ebiten.DrawRectShaderOptions{}
+		opShaded.GeoM = op.GeoM
 		opShaded.Uniforms = map[string]interface{}{
 			"Time": float32(g.time) / 60,
 			"Cursor": []float32{
@@ -253,9 +250,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 				float32(global.VirtualScreenSize.H),
 			},
 		}
-		opShaded.Images[0] = framebuffer
+		opShaded.Images[0] = g.framebuffer
 		screen.DrawRectShader(g.width, g.height, g.shader, opShaded)
+		// g.shaderFramebuffer.DrawRectShader(g.width, g.height, g.shader, opShaded)
+		// screen.DrawImage(g.shaderFramebuffer, op)
 	} else {
-		screen.DrawImage(framebuffer, op)
+		screen.DrawImage(g.framebuffer, op)
 	}
 }

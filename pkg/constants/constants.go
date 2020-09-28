@@ -1,15 +1,16 @@
 package constants
 
-import "image/color"
+import (
+	"image/color"
+	"kokos_quest/pkg/units"
+)
 
 const (
-	TileSize = 16
-
 	TilesPerWidth  = 20
 	TilesPerHeight = 20
 
-	ScreenWidth  = TileSize * TilesPerWidth
-	ScreenHeight = TileSize * TilesPerHeight
+	ScreenWidth  = units.TileSize * TilesPerWidth
+	ScreenHeight = units.TileSize * TilesPerHeight
 )
 
 var (

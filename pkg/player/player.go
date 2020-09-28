@@ -1,9 +1,8 @@
 package player
 
 import (
-	"kokos_quest/pkg/constants"
 	"kokos_quest/pkg/draw"
-	"kokos_quest/pkg/input"
+	"kokos_quest/pkg/physics"
 	"kokos_quest/pkg/units"
 
 	"github.com/SolarLune/resolv/resolv"
@@ -11,8 +10,8 @@ import (
 )
 
 const (
-	PlayerWidth  = constants.TileSize
-	PlayerHeight = constants.TileSize
+	PlayerWidth  = units.TileSize
+	PlayerHeight = units.TileSize
 
 	RectWidth  = int32(PlayerWidth - 2)
 	RectHeight = int32(PlayerHeight)
@@ -21,8 +20,9 @@ const (
 )
 
 type Player struct {
-	dir units.HorizDir
-	pos units.Vec
+	dir        units.HorizDir
+	pos        units.Vec
+	kinematics physics.Kinematics2D
 
 	rect *resolv.Rectangle
 }
@@ -34,14 +34,14 @@ func NewPlayer(pos units.Vec, dir units.HorizDir) *Player {
 
 	return &Player{
 		dir: dir,
-		pos: pos,
+		kinematics: physics.MakeKinematics2D(pos, units.VecFloat{}),
 
 		rect: rect,
 	}
 }
 
 func (p *Player) Pos() units.Vec {
-	return p.pos
+	return p.kinematics.Position()
 }
 
 func (p *Player) Rect() *resolv.Rectangle {
@@ -60,38 +60,15 @@ func (p *Player) transformOp(op *ebiten.DrawImageOptions) {
 	}
 }
 
-func (p *Player) Update(space *resolv.Space) {
-	if input.IsKeyPressed(input.LEFT) {
-		p.pos.X -= 1
-		if p.dir == units.Right {
-			p.dir = units.Left
-		}
-	} else if input.IsKeyPressed(input.RIGHT) {
-		p.pos.X += 1
-		if p.dir == units.Left {
-			p.dir = units.Right
-		}
-	}
-
-	if input.IsKeyPressed(input.UP) {
-		p.pos.Y -= 1
-	} else if input.IsKeyPressed(input.DOWN) {
-		p.pos.Y += 1
-	}
-
-	if input.IsKeyPressed(input.A) {
-		if p.dir == units.Left {
-			p.pos.X--
-		} else {
-			p.pos.X++
-		}
-	}
+func (p *Player) Update(space *resolv.Space, dt float64) {
+	p.updateY()
 
 	p.updateRect()
 }
 
 func (p *Player) updateRect() {
-	x, y := int32(p.pos.X+RectOffsetX), int32(p.pos.Y)
+	pos := p.Pos()
+	x, y := int32(pos.X+RectOffsetX), int32(pos.Y)
 	p.rect.SetXY(x, y)
 }
 
@@ -99,5 +76,6 @@ func (p *Player) Draw(screen *ebiten.Image) {
 	img := draw.GetTiledImage("PlayerStanding", 0, 0)
 	op := &ebiten.DrawImageOptions{}
 	p.transformOp(op)
-	draw.DrawWithShadow(screen, img, p.pos.X, p.pos.Y, op)
+	pos := p.Pos()
+	draw.DrawWithShadow(screen, img, pos.X, pos.Y, op)
 }

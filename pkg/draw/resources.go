@@ -6,7 +6,7 @@ import (
 	"image"
 
 	"kokos_quest/assets"
-	"kokos_quest/pkg/constants"
+	"kokos_quest/pkg/units"
 
 	"github.com/hajimehoshi/ebiten"
 )
@@ -71,7 +71,7 @@ func GetSubImage(key string, sx, sy, tile_size int) *ebiten.Image {
 
 // Shorthand to `GetSubImage` with the global tile size
 func GetTiledImage(key string, sx, sy int) *ebiten.Image {
-	return GetSubImage(key, sx, sy, constants.TileSize)
+	return GetSubImage(key, sx, sy, units.TileSize)
 }
 
 // Return the count of tiles in an image

@@ -12,8 +12,8 @@ import (
 func (g *Game) InitStuff() {
 	doc := js.Global().Get("document")
 	screenSizeObj := js.ValueOf(map[string]interface{}{
-		"width":  global.ScreenWidth,
-		"height": global.ScreenHeight,
+		"width":  global.ScreenSize.W,
+		"height": global.ScreenSize.H,
 		"scale":  ebiten.DeviceScaleFactor(),
 	})
 	doc.Set("__Game__ScreenSize", screenSizeObj)

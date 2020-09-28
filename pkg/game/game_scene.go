@@ -15,7 +15,7 @@ type GameScene struct {
 
 	w *world.World
 
-	currentLevel int
+	currentLevel uint
 }
 
 func NewGameScene() *GameScene {
@@ -34,12 +34,16 @@ func (s *GameScene) Init() {
 	s.initializedScene = true
 }
 
-func (s *GameScene) Update(g *Game) {
+func (s *GameScene) Update(g *Game, dt float64) {
 	if input.IsKeyJustPressed(input.B) {
 		audio.PlaySE("Explosion")
 	}
 
-	s.w.Update()
+	if input.IsKeyJustPressed(input.START) {
+		s.w = levels.Load(s.currentLevel)
+	}
+
+	s.w.Update(dt)
 }
 
 func (s *GameScene) Draw(screen *ebiten.Image) {

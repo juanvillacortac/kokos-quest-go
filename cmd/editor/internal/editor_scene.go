@@ -72,14 +72,14 @@ func (s *EditorScene) Init() {
 	s.initializedScene = true
 }
 
-func (s *EditorScene) Update(g *game.Game) {
+func (s *EditorScene) Update(g *game.Game, _ float64) {
 	s.tileInCursor.Key = draw.Keys()[s.keyIndex]
 	s.tileInCursor.SourceX = s.sourcePos.X
 	s.tileInCursor.SourceY = s.sourcePos.Y
 
 	s.Input()
 
-	ts := constants.TileSize
+	ts := units.TileSize
 	x, y := global.CursorPosition().X, global.CursorPosition().Y
 	x, y = x/ts, y/ts
 	if (x >= 0 && x < constants.TilesPerWidth) && (y >= 0 && y < constants.TilesPerHeight) {
@@ -108,7 +108,7 @@ func (s *EditorScene) PrintInfo(screen *ebiten.Image) {
 
 	keyStr := fmt.Sprintf(`"%s" [%v/%v]`, s.tileInCursor.Key, s.keyIndex+1, len(keys))
 
-	w, h := draw.CountTiledImage(draw.GetImage(s.tileInCursor.Key), constants.TileSize)
+	w, h := draw.CountTiledImage(draw.GetImage(s.tileInCursor.Key), units.TileSize)
 	maxSource := units.Vec{X: w - 1, Y: h - 1}
 
 	math.Sqrt(2)

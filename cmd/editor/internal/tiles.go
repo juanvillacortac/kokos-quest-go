@@ -1,7 +1,6 @@
 package editor
 
 import (
-	"kokos_quest/pkg/constants"
 	"kokos_quest/pkg/draw"
 	"kokos_quest/pkg/tiles"
 	"kokos_quest/pkg/units"
@@ -54,7 +53,7 @@ func (s *EditorScene) decrementKeyIndex() {
 }
 
 func (s *EditorScene) incrementSourcePos() {
-	cx, cy := draw.CountTiledImage(draw.GetImage(s.tileInCursor.Key), constants.TileSize)
+	cx, cy := draw.CountTiledImage(draw.GetImage(s.tileInCursor.Key), units.TileSize)
 	if s.sourcePos.X < cx {
 		s.sourcePos.X++
 		if s.sourcePos.X == cx {
@@ -69,7 +68,7 @@ func (s *EditorScene) incrementSourcePos() {
 }
 
 func (s *EditorScene) decrementSourcePos() {
-	cx, cy := draw.CountTiledImage(draw.GetImage(s.tileInCursor.Key), constants.TileSize)
+	cx, cy := draw.CountTiledImage(draw.GetImage(s.tileInCursor.Key), units.TileSize)
 	if s.sourcePos.X >= 0 {
 		s.sourcePos.X--
 		if s.sourcePos.X < 0 {
